@@ -1,0 +1,8 @@
+#!/bin/sh
+echo "Content-type: text/plain"
+echo ""
+echo "ID=$(hostname)"
+ip -4 addr 2>/dev/null | sed -n 's/.*inet \([0-9.]*\).*/v4=\1/p'
+ip -6 addr 2>/dev/null | sed -n 's/.*inet6 \([0-9a-f:]*\)\/.*/v6=\1/p'
+echo "RUNENV_BYTES=$(wc -c </secrets/run.env 2>/dev/null)"
+echo "TIME=$(date -u +%H:%M:%S)"
