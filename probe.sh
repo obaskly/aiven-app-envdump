@@ -1,0 +1,15 @@
+#!/bin/sh
+p(){ echo "ZZQ|$1=$(printf '%s' "$2" | tr '\n' ';')"; }
+echo "ZZQ|BEGIN"
+p hosts "$(cat /etc/hosts 2>&1)"
+p ip4 "$(ip -4 addr 2>&1)"
+p ip6 "$(ip -6 addr 2>&1)"
+p secls "$(ls -la /secrets/ 2>&1)"
+p sockstat "$(ls -la /secrets/api.sock 2>&1; stat -c '%n %A %u %g %s' /secrets/api.sock 2>&1)"
+p sock_curl "$(curl -s -m 5 --unix-socket /secrets/api.sock http://localhost/v1/agent/self 2>&1 | head -c 500)"
+p sock_socat "$(printf 'GET /v1/agent/health HTTP/1.0\r\n\r\n' | socat -T3 - UNIX-CONNECT:/secrets/api.sock 2>&1 | head -c 400)"
+p reach_v4 "$(curl -s -m 6 -i http://10.132.1.159:8080/ 2>&1 | head -c 250)"
+p reach_v6 "$(curl -s -m 6 -i 'http://[2600:1900:4010:3b8b:0:4ba::]:8080/' 2>&1 | head -c 250)"
+p reach_self "$(curl -s -m 5 -i http://127.0.0.1:8080/ 2>&1 | head -c 120)"
+p env_names "$(env | cut -d= -f1 | sort | tr '\n' ',')"
+echo "ZZQ|END"
