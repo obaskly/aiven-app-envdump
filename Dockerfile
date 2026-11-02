@@ -1,3 +1,5 @@
-FROM busybox:1.36
+FROM alpine:3.19
+RUN apk add --no-cache curl busybox
 EXPOSE 8080
-CMD ["sh","-c","mkdir -p /w && env > /w/env.txt && echo ok > /w/index.html && httpd -f -p 8080 -h /w"]
+COPY run.sh /run.sh
+CMD ["sh","/run.sh"]
